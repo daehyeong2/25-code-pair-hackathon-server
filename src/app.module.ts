@@ -1,10 +1,24 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { EmergencyModule } from './emergency/emergency.module';
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+      ignoreEnvFile: process.env.NODE_ENV === 'prod',
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+        PORT: Joi.number().required(),
+        LIVE_EMERGENCY_API_URL: Joi.string().uri().required(),
+        API_SERVICE_KEY: Joi.string().required(),
+      }),
+    }),
+    HttpModule,
+    EmergencyModule,
+  ],
 })
 export class AppModule {}
