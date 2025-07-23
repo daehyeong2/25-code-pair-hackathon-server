@@ -3,6 +3,7 @@ import { EmergencyModule } from './emergency/emergency.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { HttpModule } from '@nestjs/axios';
+import { ApiResponseModule } from '@zabih-dev/nest-api-response';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { HttpModule } from '@nestjs/axios';
         API_SERVICE_KEY: Joi.string().required(),
       }),
     }),
+    ApiResponseModule,
     HttpModule,
     EmergencyModule,
   ],
