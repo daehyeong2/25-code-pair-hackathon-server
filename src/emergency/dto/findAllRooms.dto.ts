@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Room } from '../types/room';
+import { ToBoolean } from 'src/common/decorators/ToBoolean';
 
 export class FindAllRoomsRequest {
   @IsNotEmpty()
@@ -17,6 +18,11 @@ export class FindAllRoomsRequest {
   @IsNumber()
   @ApiProperty()
   pageNumber: number;
+
+  @IsBoolean()
+  @ApiProperty()
+  @ToBoolean()
+  wideSearch: boolean;
 }
 
 export interface FindAllRoomsResponse {

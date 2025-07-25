@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { HttpModule } from '@nestjs/axios';
 import { ApiResponseModule } from '@zabih-dev/nest-api-response';
+import { GeoModule } from './geo/geo.module';
+import { RedisCacheModule } from './common/cache/redis-cache.module';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { ApiResponseModule } from '@zabih-dev/nest-api-response';
     }),
     ApiResponseModule,
     HttpModule,
+    GeoModule,
     EmergencyModule,
   ],
 })

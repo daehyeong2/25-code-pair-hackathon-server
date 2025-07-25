@@ -11,8 +11,8 @@ export class EmergencyController {
 
   @Get()
   async findAllRooms(
-    @Query() query: FindAllRoomsRequest,
+    @Query() req: FindAllRoomsRequest,
   ): Promise<FindAllRoomsResponse> {
-    return this.emergencyService.findAllRooms(query);
+    return this.emergencyService.findAllRooms(req);
   }
 }
