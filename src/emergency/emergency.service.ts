@@ -67,13 +67,13 @@ export class EmergencyService {
     if (items instanceof Array === false) items = [items]; // Ensure items is always an array
     const roomsRes: Room[] = items.map((item: any) => {
       item.hvidate = item.hvidate.toString();
-      return this.itemToRoom(item, target.stage1);
+      return this.itemToRoom(item, target.stage1, target.stage2);
     });
     await this.redis.setObject(cacheKey, roomsRes);
     return roomsRes;
   }
 
-  itemToRoom(item: any, parent_city: string): Room {
+  itemToRoom(item: any, provinces: string, municipalities: string): Room {
     return {
       hospitalId: item.hpid,
       institution_name: item.dutyName,
@@ -85,7 +85,8 @@ export class EmergencyService {
       isAvailableAmbulance: item.hvamyn,
       emergency_duty_tel: item.hv1,
       emergency_tel: item.dutyTel3,
-      parent_city,
+      provinces,
+      municipalities,
       updatedAt: new Date(
         item.hvidate.slice(0, 4) +
           '-' +

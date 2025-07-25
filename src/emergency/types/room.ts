@@ -10,5 +10,6 @@ export interface Room {
   institution_name: string;
   emergency_duty_tel: string;
   emergency_tel: string;
-  parent_city: string;
+  provinces: string;
+  municipalities: string;
 }
