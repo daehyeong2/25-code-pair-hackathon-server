@@ -18,6 +18,8 @@ import { RedisCacheModule } from './common/cache/redis-cache.module';
         PORT: Joi.number().required(),
         LIVE_EMERGENCY_API_URL: Joi.string().uri().required(),
         API_SERVICE_KEY: Joi.string().required(),
+        KAKAO_REST_API_URL: Joi.string().uri().required(),
+        KAKAO_REST_API_KEY: Joi.string().required(),
       }),
     }),
     ApiResponseModule,

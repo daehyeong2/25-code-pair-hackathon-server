@@ -12,4 +12,6 @@ export interface Room {
   emergency_tel: string;
   provinces: string;
   municipalities: string;
+  longitude?: number; // Optional for compatibility
+  latitude?: number; // Optional for compatibility
 }

@@ -65,10 +65,19 @@ export class EmergencyService {
       return [];
     }
     if (items instanceof Array === false) items = [items]; // Ensure items is always an array
-    const roomsRes: Room[] = items.map((item: any) => {
-      item.hvidate = item.hvidate.toString();
-      return this.itemToRoom(item, target.stage1, target.stage2);
-    });
+    const roomsRes: Room[] = await Promise.all(
+      items.map(async (item: any) => {
+        item.hvidate = item.hvidate.toString();
+        const placeName = `${target.stage1} ${target.stage2} ${item.dutyName}`;
+        const coordinate =
+          await this.geoService.getCoordinateByPlaceName(placeName);
+        if (coordinate) {
+          item.longitude = parseFloat(coordinate.longitude);
+          item.latitude = parseFloat(coordinate.latitude);
+        }
+        return this.itemToRoom(item, target.stage1, target.stage2);
+      }),
+    );
     await this.redis.setObject(cacheKey, roomsRes);
     return roomsRes;
   }
@@ -101,6 +110,8 @@ export class EmergencyService {
           item.hvidate.slice(12, 14) +
           'Z',
       ),
+      longitude: item.longitude,
+      latitude: item.latitude,
     };
   }
 }

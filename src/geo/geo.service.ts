@@ -3,6 +3,9 @@ import { koreaGeo } from './korea-geo';
 import * as turf from '@turf/turf';
 import RBush from 'rbush';
 import { Region } from 'src/emergency/types/region';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 interface BBoxItem {
   minX: number;
@@ -17,7 +20,10 @@ export class GeoService {
   private geoData: GeoJSON.FeatureCollection;
   private rtree: RBush<BBoxItem>;
 
-  constructor() {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {
     this.geoData = koreaGeo as GeoJSON.FeatureCollection;
   }
 
@@ -93,5 +99,39 @@ export class GeoService {
       stage1: f.properties?.parent_city,
       stage2: f.properties?.name,
     }));
+  }
+
+  async getCoordinateByPlaceName(placeName: string) {
+    try {
+      const res = await firstValueFrom(
+        this.httpService.get(
+          `${this.configService.get('KAKAO_REST_API_URL')!}/v2/local/search/keyword`,
+          {
+            headers: {
+              Authorization: `KakaoAK ${this.configService.get('KAKAO_REST_API_KEY')}`,
+            },
+            params: {
+              query: placeName,
+              category_group_code: 'HP8',
+            },
+          },
+        ),
+      );
+      if (
+        res.status !== 200 ||
+        !res.data.documents ||
+        res.data.documents.length === 0
+      ) {
+        return null; // 장소를 찾을 수 없음
+      }
+      const firstResult = res.data.documents[0];
+      return {
+        latitude: firstResult.y,
+        longitude: firstResult.x,
+      };
+    } catch (error) {
+      console.error('Error in getCoordinateByPlaceName:', error);
+      return null;
+    }
   }
 }
