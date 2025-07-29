@@ -10,6 +10,10 @@ import { firstValueFrom } from 'rxjs';
 import { GeoService } from 'src/geo/geo.service';
 import { Region } from './types/region';
 import { RedisCacheService } from 'src/common/cache/redis-cache.service';
+import {
+  FindAllRoomsByCoordinateRequest,
+  FindAllRoomsByCoordinateResponse,
+} from './dto/findAllRoomByCoordinate';
 
 @Injectable()
 export class EmergencyService {
@@ -35,6 +39,33 @@ export class EmergencyService {
       rooms.push(...roomsRes);
     }
     return {
+      region: { stage1: req.stage1, stage2: req.stage2 },
+      rooms,
+    };
+  }
+
+  async findAllRoomsByCoordinate(
+    req: FindAllRoomsByCoordinateRequest,
+  ): Promise<FindAllRoomsByCoordinateResponse> {
+    const region = await this.geoService.getRegionByCoordinate(
+      req.latitude,
+      req.longitude,
+    );
+    if (!region) {
+      throw new Error('No region found for the given coordinates');
+    }
+    let searchTarget: Region[] = [region];
+    if (req.wideSearch) {
+      const neighbors = this.geoService.getNeighbors(region);
+      searchTarget.push(...neighbors);
+    }
+    const rooms: Room[] = [];
+    for (const target of searchTarget) {
+      const roomsRes: Room[] = await this.fetchRooms(target, req.pageNumber);
+      rooms.push(...roomsRes);
+    }
+    return {
+      region,
       rooms,
     };
   }

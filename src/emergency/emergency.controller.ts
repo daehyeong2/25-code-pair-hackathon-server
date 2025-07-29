@@ -1,9 +1,13 @@
-import { Controller, Get, Post, Body, Req, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { EmergencyService } from './emergency.service';
 import {
   FindAllRoomsRequest,
   FindAllRoomsResponse,
 } from './dto/findAllRooms.dto';
+import {
+  FindAllRoomsByCoordinateRequest,
+  FindAllRoomsByCoordinateResponse,
+} from './dto/findAllRoomByCoordinate';
 
 @Controller('emergency')
 export class EmergencyController {
@@ -14,5 +18,12 @@ export class EmergencyController {
     @Query() req: FindAllRoomsRequest,
   ): Promise<FindAllRoomsResponse> {
     return this.emergencyService.findAllRooms(req);
+  }
+
+  @Get('/by-coordinate')
+  async findAllRoomsByCoordinate(
+    @Query() req: FindAllRoomsByCoordinateRequest,
+  ): Promise<FindAllRoomsByCoordinateResponse> {
+    return this.emergencyService.findAllRoomsByCoordinate(req);
   }
 }

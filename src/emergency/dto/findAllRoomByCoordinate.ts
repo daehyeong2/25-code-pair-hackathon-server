@@ -4,16 +4,16 @@ import { Room } from '../types/room';
 import { ToBoolean } from 'src/common/decorators/ToBoolean';
 import { Region } from '../types/region';
 
-export class FindAllRoomsRequest {
+export class FindAllRoomsByCoordinateRequest {
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   @ApiProperty()
-  stage1: string;
+  latitude: number;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   @ApiProperty()
-  stage2: string;
+  longitude: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -26,7 +26,7 @@ export class FindAllRoomsRequest {
   wideSearch: boolean;
 }
 
-export interface FindAllRoomsResponse {
+export interface FindAllRoomsByCoordinateResponse {
   region: Region;
   rooms: Room[];
 }

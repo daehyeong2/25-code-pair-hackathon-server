@@ -134,4 +134,30 @@ export class GeoService {
       return null;
     }
   }
+
+  async getRegionByCoordinate(
+    latitude: number,
+    longitude: number,
+  ): Promise<Region | null> {
+    const point = turf.point([longitude, latitude]);
+    // Convert each region feature to its centroid point
+    const pointsFC: GeoJSON.FeatureCollection<GeoJSON.Point> = {
+      type: 'FeatureCollection',
+      features: this.geoData.features.map((feature) => {
+        const centroid = turf.centroid(feature);
+        centroid.properties = {
+          ...feature.properties,
+        };
+        return centroid;
+      }),
+    };
+    const nearestFeature = turf.nearestPoint(point, pointsFC);
+    if (!nearestFeature) return null;
+
+    const properties = nearestFeature.properties;
+    return {
+      stage1: properties?.parent_city,
+      stage2: properties?.name,
+    };
+  }
 }
